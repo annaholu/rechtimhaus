@@ -7,6 +7,7 @@ import type {
   Bundesland,
   ChatMessage,
   ChipOption,
+  FactCheckResponse,
   Role,
   SituationTag,
 } from "@/lib/types";
@@ -203,6 +204,57 @@ export default function Home() {
     setPhase("ask-aktion");
   }
 
+  async function runFactCheck(text: string) {
+    const loadingId = makeId();
+    setMessages((prev) => [
+      ...prev,
+      { id: loadingId, sender: "assistant", kind: "text", text: "Ich prüfe deine Nachricht …" },
+    ]);
+    scrollToBottom();
+
+    let result: FactCheckResponse;
+    try {
+      const res = await fetch("/api/factcheck", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          text,
+          role,
+          bundesland,
+          tags: sessionTags,
+          hausordnungFileName,
+        }),
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      result = await res.json();
+    } catch {
+      result = {
+        rows: buildFactCheckRows(text, sessionTags, bundesland),
+        escalation: detectEscalation(text, sessionTags) ?? null,
+        usedFallback: true,
+      };
+    }
+
+    setMessages((prev) => [
+      ...prev.filter((m) => m.id !== loadingId),
+      {
+        id: makeId(),
+        sender: "assistant",
+        kind: "factcheck",
+        rows: result.rows,
+        escalation: result.escalation ?? undefined,
+      },
+    ]);
+    if (result.usedFallback) {
+      pushAssistantText(
+        "Hinweis: Die automatische Analyse war gerade nicht verfügbar — das ist eine Beispiel-Antwort, kein Live-Ergebnis."
+      );
+    }
+    pushAssistantText("Möchtest du noch etwas prüfen?", FOLLOWUP_CHIPS);
+    setPhase("ask-aktion");
+    scrollToBottom();
+  }
+
   function handleSend(text: string) {
     if (phase === "ask-situation") {
       pushUserText(text);
@@ -214,15 +266,7 @@ export default function Home() {
 
     if (phase === "ask-factcheck-input") {
       pushUserText(text);
-      const rows = buildFactCheckRows(text, sessionTags, bundesland);
-      const escalation = detectEscalation(text, sessionTags);
-      setMessages((prev) => [
-        ...prev,
-        { id: makeId(), sender: "assistant", kind: "factcheck", rows, escalation },
-      ]);
-      pushAssistantText("Möchtest du noch etwas prüfen?", FOLLOWUP_CHIPS);
-      setPhase("ask-aktion");
-      scrollToBottom();
+      void runFactCheck(text);
       return;
     }
 
@@ -264,8 +308,8 @@ export default function Home() {
 
       <div className="mx-auto flex w-full max-w-2xl flex-1 flex-col gap-4 px-4 py-5">
         <p className="rounded-xl border border-border bg-surface px-3 py-2 text-center font-sans text-xs text-muted">
-          Demo-Modus: Antworten hier sind Beispieldaten für die Oberfläche, keine echte
-          Rechtsberatung und noch nicht mit einer echten Rechtsdatenbank verbunden.
+          Fact-checks werden, wenn konfiguriert, von Claude analysiert — keine echte
+          Rechtsberatung. Freie Fragen sind noch Beispieldaten.
         </p>
         <DateDivider label="Heute" />
 
