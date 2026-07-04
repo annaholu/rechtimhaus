@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "laws:import": "node scripts/import-law-library.mjs",
+    "laws:fetch": "node scripts/fetch-laws.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.110.0",
@@ -22,6 +24,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.10",
+    "fast-xml-parser": "^5.9.3",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

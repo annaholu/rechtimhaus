@@ -1,0 +1,69 @@
+{
+  "updatedAt": "2026-07-04T00:00:00.000Z",
+  "source": "seed",
+  "entries": [
+    {
+      "id": "weg-10",
+      "gesetz": "WEG",
+      "paragraph": "§ 10",
+      "title": "Allgemeine Grundsätze",
+      "text": null,
+      "href": "https://www.gesetze-im-internet.de/weg/__10.html",
+      "tags": ["Sondernutzungsrecht"]
+    },
+    {
+      "id": "weg-13",
+      "gesetz": "WEG",
+      "paragraph": "§ 13",
+      "title": "Rechte des Wohnungseigentümers",
+      "text": null,
+      "href": "https://www.gesetze-im-internet.de/weg/__13.html",
+      "tags": ["Sondernutzungsrecht"]
+    },
+    {
+      "id": "weg-14",
+      "gesetz": "WEG",
+      "paragraph": "§ 14",
+      "title": "Pflichten des Wohnungseigentümers",
+      "text": null,
+      "href": "https://www.gesetze-im-internet.de/weg/__14.html",
+      "tags": ["Instandhaltung"]
+    },
+    {
+      "id": "bgb-535",
+      "gesetz": "BGB",
+      "paragraph": "§ 535",
+      "title": "Inhalt und Hauptpflichten des Mietvertrags",
+      "text": null,
+      "href": "https://www.gesetze-im-internet.de/bgb/__535.html",
+      "tags": ["Instandhaltung"]
+    },
+    {
+      "id": "bgb-558",
+      "gesetz": "BGB",
+      "paragraph": "§ 558",
+      "title": "Mieterhöhung bis zur ortsüblichen Vergleichsmiete",
+      "text": null,
+      "href": "https://www.gesetze-im-internet.de/bgb/__558.html",
+      "tags": ["Mieterhöhung"]
+    },
+    {
+      "id": "bgb-559",
+      "gesetz": "BGB",
+      "paragraph": "§ 559",
+      "title": "Mieterhöhung nach Modernisierungsmaßnahmen",
+      "text": null,
+      "href": "https://www.gesetze-im-internet.de/bgb/__559.html",
+      "tags": ["Mieterhöhung"]
+    },
+    {
+      "id": "bgb-906",
+      "gesetz": "BGB",
+      "paragraph": "§ 906",
+      "title": "Zuführung unwägbarer Stoffe",
+      "text": null,
+      "href": "https://www.gesetze-im-internet.de/bgb/__906.html",
+      "tags": ["Lärm"]
+    }
+  ]
+}

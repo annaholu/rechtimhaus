@@ -23,6 +23,33 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
+## Grounding fact-check answers in real statute text
+
+`data/lawLibrary.json` holds the WEG/BGB references the fact-check prompt
+cites (`src/lib/factcheckPrompt.ts`). It ships seeded with correct paragraph
+numbers, titles, and official links but `text: null` — the app only ever
+cites labels, never invents wording, until real text is imported. Two ways
+to fill it in:
+
+```bash
+# 1. Upload/paste statute text yourself (verify it before importing — the
+#    app quotes it directly):
+npm run laws:import path/to/your-upload.json
+# accepts either a bare array of entries or { "entries": [...] }, upserted by "id"
+
+# 2. Fetch it from the official source (gesetze-im-internet.de):
+npm run laws:fetch -- --dry-run   # inspect what would be written first
+npm run laws:fetch                # then write it
+```
+
+`laws:fetch` was **not verified against the live site** — it was built and
+unit-tested in an environment whose network policy blocks
+gesetze-im-internet.de, so only the parsing logic (against a realistic
+sample of its known XML schema) and the zip-extraction step were exercised
+directly. It fails loudly rather than writing bad data if the schema
+doesn't match, but review its output (via `--dry-run`) before trusting it.
+Requires the `unzip` CLI on PATH.
+
 ## Structure
 
 - `src/app/page.tsx` — chat flow state machine
@@ -34,3 +61,7 @@ Open [http://localhost:3000](http://localhost:3000).
 - `src/lib/mockEngine.ts` — claim extraction + mocked fact-check/answer generation (also used as the API fallback)
 - `src/lib/factcheckPrompt.ts` — system prompt + structured-output tool schema for the Claude fact-check call
 - `src/lib/anthropicClient.ts` — server-only Anthropic client (reads `ANTHROPIC_API_KEY`)
+- `data/lawLibrary.json` — WEG/BGB reference entries (paragraph, title, text, link) quoted into the fact-check prompt
+- `src/lib/lawLibrary.ts` — server-only loader for `data/lawLibrary.json`
+- `scripts/import-law-library.mjs` — developer CLI to upload/merge statute text into the library
+- `scripts/fetch-laws.mjs` — best-effort fetcher from gesetze-im-internet.de (see caveat above)
