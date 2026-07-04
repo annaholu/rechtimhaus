@@ -70,6 +70,24 @@ export interface FactCheckResponse {
   usedFallback: boolean;
 }
 
+export type LawGesetz = "WEG" | "BGB";
+
+export interface LawEntry {
+  id: string;
+  gesetz: LawGesetz;
+  paragraph: string;
+  title?: string;
+  text: string | null;
+  href: string;
+  tags: SituationTag[];
+}
+
+export interface LawLibrary {
+  updatedAt: string;
+  source: "seed" | "manual" | "gesetze-im-internet";
+  entries: LawEntry[];
+}
+
 export interface SessionContext {
   role?: Role;
   bundesland?: Bundesland;

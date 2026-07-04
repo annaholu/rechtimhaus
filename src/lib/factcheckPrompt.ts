@@ -1,9 +1,16 @@
-import { LANDESNACHBARRECHT, TOPICS } from "./legalData";
+import { LANDESNACHBARRECHT } from "./legalData";
+import { getLawLibrary } from "./lawLibrary";
 import type { Bundesland, Role, SituationTag } from "./types";
 
-const KNOWN_CITATIONS = Object.values(TOPICS)
-  .flatMap((t) => t.citations)
-  .map((c) => c.label);
+function buildReferenceBlock(): string {
+  const { entries, updatedAt, source } = getLawLibrary();
+  const lines = entries.map((e) => {
+    const heading = `${e.paragraph} ${e.gesetz}${e.title ? ` (${e.title})` : ""}`;
+    if (e.text) return `- ${heading}: "${e.text}"`;
+    return `- ${heading} — Wortlaut noch nicht importiert; nenne nur Paragraph und Gesetz als Label, erfinde keinen Text dazu.`;
+  });
+  return `${lines.join("\n")}\n(Referenzstand: ${source}, zuletzt aktualisiert ${updatedAt})`;
+}
 
 export function buildFactCheckSystemPrompt(
   role: Role | undefined,
@@ -23,8 +30,8 @@ Nutzerkontext:
 - Angegebene Themen-Stichworte: ${tags.length > 0 ? tags.join(", ") : "keine"}
 - Hausordnung hochgeladen: ${hausordnungFileName ? `ja ("${hausordnungFileName}", Inhalt in dieser Demo nicht ausgelesen)` : "nein"}
 
-Bekannte, verlässliche Referenzen, die du bevorzugt nutzen sollst:
-${KNOWN_CITATIONS.map((c) => `- ${c}`).join("\n")}
+Bekannte, verlässliche Referenzen, die du bevorzugt nutzen sollst (wenn ein Wortlaut angegeben ist, zitiere/paraphrasiere daraus statt aus eigenem Wissen):
+${buildReferenceBlock()}
 ${
   landesrecht
     ? `- Landesnachbarrecht für ${bundesland}: ${landesrecht.gesetz}${landesrecht.lowConfidence ? " (Stand nicht zuverlässig bestätigt)" : ""}`
@@ -33,7 +40,7 @@ ${
 
 Strikte Regeln:
 1. Erfinde niemals eine §-Nummer oder ein Gesetz. Wenn du unsicher bist oder keine passende reale Vorschrift kennst, setze rechtsgrundlage_label auf "kein konkreter Bezug genannt" und rechtsgrundlage_href auf null.
-2. Zitiere nur echte, existierende Vorschriften aus WEG oder BGB (Mietrecht, §§535–580a) oder das genannte Landesnachbarrechtsgesetz. Erfinde keine Urteile.
+2. Zitiere nur echte, existierende Vorschriften aus WEG oder BGB (Mietrecht, §§535–580a) oder das genannte Landesnachbarrechtsgesetz. Wenn eine Referenz oben einen Wortlaut hat, erfinde keinen abweichenden Text — nutze den gegebenen. Erfinde keine Urteile.
 3. Nie ein Urteil ("das ist illegal", "du hast recht") — nur vorsichtige Einschätzung ("das erscheint vereinbar mit...", "dafür fehlt ein konkreter Anhaltspunkt").
 4. Unterscheide klar zwischen Gesetz, Vertrag/Hausordnung und bloßer Hausgewohnheit ohne rechtliche Wirkung.
 5. Wenn die Situation nach wiederholtem Druck, Drohungen oder einem andauernden Streit klingt (nicht nur einer einzelnen Sachfrage), setze das escalation-Feld mit einem Hinweis, dass eine echte Beratung (Eigentümerverein, Mieterverein, Fachanwalt) der sinnvolle nächste Schritt ist. Sonst setze escalation auf null.
