@@ -56,6 +56,20 @@ export interface FreeAnswer {
   hinweis?: string;
 }
 
+export interface FactCheckRequest {
+  text: string;
+  role?: Role;
+  bundesland?: Bundesland;
+  tags: SituationTag[];
+  hausordnungFileName?: string;
+}
+
+export interface FactCheckResponse {
+  rows: FactCheckRow[];
+  escalation: string | null;
+  usedFallback: boolean;
+}
+
 export interface SessionContext {
   role?: Role;
   bundesland?: Bundesland;
